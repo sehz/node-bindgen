@@ -1,3 +1,5 @@
+use std::num::ParseIntError;
+
 use node_bindgen::derive::node_bindgen;
 
 struct MyObject {
@@ -71,3 +73,34 @@ impl MyObject {
         }
     }
 }
+
+
+use node_bindgen::core::val::JsEnv;
+
+struct ClassWithError {
+    val: i32
+  }
+  
+#[node_bindgen]
+impl ClassWithError {
+    #[node_bindgen(constructor)]
+    fn new(env: node_bindgen::core::val::JsEnv, val_str: String) -> Self {
+
+        match val_str.parse::<i32>() {
+            Ok(val) => {
+                Self {
+                    val: 22
+                }
+            },
+            Err(err) => {
+                env.create_error(&format!("parse error: {}",err));
+                Self {
+                    val: 0
+                }
+            }
+        }
+        
+    }
+}
+
+
